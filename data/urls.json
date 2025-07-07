@@ -1,0 +1,14 @@
+{
+  "http://bit.ly/4noI6pE": {
+    "original_url": "http://bit.ly/4noI6pE",
+    "final_url": "https://www.youtube.com/watch?v=tDcvvHeKyuw",
+    "redirect_chain": [
+      "http://bit.ly/4noI6pE"
+    ],
+    "blacklisted": false,
+    "domain_reputation": {
+      "reputation": "good"
+    },
+    "confidence_score": 100
+  }
+}
