@@ -1,10 +1,16 @@
-from urllib.parse import urlparse
+# utils/blacklist.py
+#from urllib.parse import urlparse
+
+# utils/blacklist.py
+BLACKLISTED_DOMAINS = [
+    "phishing.com",
+    "scam-site.org",
+    "malicious.site"
+]
 
 def check_blacklist(url):
-    blacklisted_domains = [
-        "phishing.com",
-        "malware.com",
-        "scam-site.net"
-    ]
-    domain = urlparse(url).netloc.lower()
-    return any(bad in domain for bad in blacklisted_domains)
+    url = url.lower().strip()
+    for domain in BLACKLISTED_DOMAINS:
+        if domain in url:
+            return True
+    return False
