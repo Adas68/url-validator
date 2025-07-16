@@ -1,4 +1,3 @@
-# tests/test_blacklist.py
 import unittest
 from utils.blacklist import check_blacklist
 
@@ -12,7 +11,6 @@ class TestBlacklist(unittest.TestCase):
         self.assertFalse(check_blacklist("https://youtube.com/watch?v=abc123"))
 
     def test_partial_match_does_not_trigger_false_positive(self):
-        # Ensure similar domains like "goodphishing.com" aren't flagged unless exact match
         self.assertFalse(check_blacklist(" https://notphishing.com "))
         self.assertFalse(check_blacklist("https://phishing.net "))
         self.assertFalse(check_blacklist("https://badphishing.com "))
