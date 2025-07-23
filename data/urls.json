@@ -10,5 +10,15 @@
       "reputation": "good"
     },
     "confidence_score": 100
+  },
+  "https://bit.ly/abc123 ": {
+    "original_url": "https://bit.ly/abc123 ",
+    "final_url": "https://example.com/page ",
+    "redirect_chain": [
+      "https://bit.ly/abc123 ",
+      "https://redirect.intermediate/page "
+    ],
+    "blacklisted": false,
+    "confidence_score": 100
   }
 }
