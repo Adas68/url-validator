@@ -20,5 +20,30 @@
     ],
     "blacklisted": false,
     "confidence_score": 100
+  },
+  "http://short.phish": {
+    "original_url": "http://short.phish",
+    "final_url": "http://phishing.com/fake-login",
+    "redirect_chain": [
+      "http://short.phish"
+    ],
+    "blacklisted": true,
+    "confidence_score": 0
+  },
+  "http://bit.ly/new-site": {
+    "original_url": "http://bit.ly/new-site",
+    "final_url": "https://new-site-2025.com",
+    "redirect_chain": [],
+    "blacklisted": false,
+    "confidence_score": 100
+  },
+  "https://bit.ly/4lepK9e": {
+    "original_url": "https://bit.ly/4lepK9e",
+    "final_url": "https://www.youtube.com/watch?v=03u4xyj0TH4",
+    "redirect_chain": [
+      "https://bit.ly/4lepK9e"
+    ],
+    "blacklisted": false,
+    "confidence_score": 100
   }
 }
