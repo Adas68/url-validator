@@ -109,13 +109,26 @@ def expand_url():
         else:
             score = 50  # Unknown reputation, not blacklisted
 
+        # Get reputation of the final domain
+        domain = urlparse(final_url).netloc
+        reputation_result = check_domain_reputation(domain)
+        reputation = reputation_result["reputation"]
+
+        # Generate confidence score
+        if blacklisted:
+            score = 0
+        elif reputation == "good":
+            score = 100
+        else:
+            score = 50  # Unknown reputation, not blacklisted
+
         # Build result object
         result = {
             "original_url": short_url,
             "final_url": final_url,
             "redirect_chain": redirect_chain,
             "blacklisted": blacklisted,
-            "reputation": reputation,
+            "reputation": reputation,           # ✅ Now included
             "confidence_score": score
         }
 
