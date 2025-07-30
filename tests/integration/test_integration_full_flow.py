@@ -45,3 +45,13 @@ class TestIntegrationFullFlow(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(data["blacklisted"])
         self.assertEqual(data["confidence_score"], 0)
+
+    @patch('production_ready_app.requests.Session.get')
+    def test_missing_url_returns_400(self, mock_get):
+        payload = {}
+        response = self.client.post('/expand',
+                               data=json.dumps(payload),
+                               content_type='application/json')
+        data = json.loads(response.data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(data["error"], "No URL provided")
