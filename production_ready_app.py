@@ -6,9 +6,10 @@ Production-ready Flask app for validating shortened URLs.
 - Evaluates domain reputation
 - Returns structured JSON with confidence score
 - Caches results to avoid repeated lookups
+- Serves a simple UI at /ui
 """
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from urllib.parse import urlparse
 import requests
 import json
@@ -49,6 +50,12 @@ def save_data(data):
 def home():
     """Health check endpoint."""
     return 'Shortened URL Validator is running!'
+
+
+@app.route('/ui')
+def ui():
+    """Serve the frontend UI."""
+    return send_from_directory('../templates', 'index.html')
 
 
 @app.route('/expand', methods=['POST'])
@@ -109,26 +116,13 @@ def expand_url():
         else:
             score = 50  # Unknown reputation, not blacklisted
 
-        # Get reputation of the final domain
-        domain = urlparse(final_url).netloc
-        reputation_result = check_domain_reputation(domain)
-        reputation = reputation_result["reputation"]
-
-        # Generate confidence score
-        if blacklisted:
-            score = 0
-        elif reputation == "good":
-            score = 100
-        else:
-            score = 50  # Unknown reputation, not blacklisted
-
         # Build result object
         result = {
             "original_url": short_url,
             "final_url": final_url,
             "redirect_chain": redirect_chain,
             "blacklisted": blacklisted,
-            "reputation": reputation,           # ✅ Now included
+            "reputation": reputation,
             "confidence_score": score
         }
 
