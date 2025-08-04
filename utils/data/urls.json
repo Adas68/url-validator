@@ -8,5 +8,15 @@
     "blacklisted": false,
     "reputation": "good",
     "confidence_score": 100
+  },
+  "http://bit.ly/4flZXK0": {
+    "original_url": "http://bit.ly/4flZXK0",
+    "final_url": "https://www.youtube.com/watch?v=U_b4miusNpc",
+    "redirect_chain": [
+      "http://bit.ly/4flZXK0"
+    ],
+    "blacklisted": false,
+    "reputation": "good",
+    "confidence_score": 100
   }
 }
