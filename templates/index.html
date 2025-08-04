@@ -3,17 +3,22 @@
 <head>
   <title>URL Validator</title>
   <style>
-    body { font-family: Arial; padding: 30px; }
-    input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; }
+    body { font-family: Arial, sans-serif; padding: 30px; max-width: 800px; margin: 0 auto; }
+    input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
     button { padding: 10px 20px; background: #007BFF; color: white; border: none; cursor: pointer; }
-    .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
-    .safe { background: #d4edda; border: 1px solid #c3e6cb; }
-    .danger { background: #f8d7da; border: 1px solid #f5c6cb; }
+    .result { margin-top: 20px; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
+    .safe { background: #d4edda; border-color: #c3e6cb; }
+    .warning { background: #fff3cd; border-color: #ffeaa7; }
+    .danger { background: #f8d7da; border-color: #f5c6cb; }
+    .field { margin: 8px 0; }
+    .field-label { font-weight: bold; }
+    .redirect-step { display: block; margin: 5px 0; color: #555; }
+    .cached-note { font-size: 0.9em; color: #666; font-style: italic; margin-top: 10px; }
   </style>
 </head>
 <body>
   <h1>🔍 URL Validator</h1>
-  <p>Paste a short link to check where it leads.</p>
+  <p>Paste a short link to check where it leads — without clicking it.</p>
   <input type="text" id="urlInput" placeholder="https://bit.ly/...">
   <button onclick="validate()">Check Link</button>
   <div id="result"></div>
@@ -25,6 +30,7 @@
         alert("Please enter a URL");
         return;
       }
+
       fetch('/expand', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -33,20 +39,61 @@
       .then(res => res.json())
       .then(data => {
         const div = document.getElementById('result');
+        let html = '';
+
         if (data.error) {
-          div.innerHTML = `<div class="result danger">❌ ${data.error}</div>`;
-        } else {
-          const status = data.blacklisted ? "🚨 Blacklisted" : "✅ Safe";
-          div.innerHTML = `
-            <div class="result ${data.blacklisted ? 'danger' : 'safe'}">
-              ${status}<br>
-              <strong>Final URL:</strong> <a href="${data.final_url}" target="_blank">${data.final_url}</a><br>
-              <strong>Confidence:</strong> ${data.confidence_score}/100
+          html += `
+            <div class="result danger">
+              <div class="field"><span class="field-label">❌ Error:</span> ${data.error}</div>
             </div>`;
+        } else {
+          // Determine status
+          let status = '✅ Safe';
+          let className = 'safe';
+          if (data.blacklisted) {
+            status = '🚨 Blacklisted';
+            className = 'danger';
+          } else if (data.reputation === 'unknown') {
+            status = '⚠️ Unknown Reputation';
+            className = 'warning';
+          }
+
+          // Build redirect chain
+          let redirectHtml = '';
+          if (data.redirect_chain && data.redirect_chain.length > 0) {
+            redirectHtml = '<div class="field"><span class="field-label">Redirect Chain:</span><br>';
+            data.redirect_chain.forEach((step, i) => {
+              redirectHtml += `<span class="redirect-step">Step ${i+1}: ${step}</span>`;
+            });
+            redirectHtml += '</div>';
+          }
+
+          // Add cached note
+          let cachedNote = '';
+          if (data.cached !== undefined) {
+            cachedNote = `<div class="cached-note">Result from cache: ${data.cached}</div>`;
+          }
+
+          // Build full result
+          html += `
+            <div class="result ${className}">
+              <div class="field"><span class="field-label">Status:</span> ${status}</div>
+              <div class="field"><span class="field-label">Final URL:</span> <a href="${data.final_url}" target="_blank">${data.final_url}</a></div>
+              <div class="field"><span class="field-label">Confidence Score:</span> ${data.confidence_score}/100</div>
+              <div class="field"><span class="field-label">Reputation:</span> ${data.reputation}</div>
+              <div class="field"><span class="field-label">Blacklisted:</span> ${data.blacklisted ? 'Yes' : 'No'}</div>
+              ${redirectHtml}
+            </div>
+            ${cachedNote}
+          `;
         }
+
+        div.innerHTML = html;
       })
       .catch(err => {
-        document.getElementById('result').innerHTML = `<div class="result danger">❌ Failed to connect</div>`;
+        console.error(err);
+        document.getElementById('result').innerHTML = 
+          `<div class="result danger">❌ Failed to connect to server. Is it running?</div>`;
       });
     }
   </script>

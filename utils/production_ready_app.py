@@ -55,7 +55,9 @@ def home():
 @app.route('/ui')
 def ui():
     """Serve the frontend UI."""
-    return send_from_directory('../templates', 'index.html')
+    # Go up one level from utils/ to project root, then into templates/
+    templates_dir = os.path.join(os.path.dirname(__file__), '..', 'templates')
+    return send_from_directory(templates_dir, 'index.html')
 
 
 @app.route('/expand', methods=['POST'])
@@ -82,7 +84,10 @@ def expand_url():
 
     # Return cached result if available
     if short_url in db:
-        return jsonify(db[short_url])
+        # Add cached flag for debugging
+        result = db[short_url].copy()
+        result['cached'] = True
+        return jsonify(result)
 
     try:
         session = requests.Session()
