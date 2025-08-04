@@ -55,9 +55,7 @@ def home():
 @app.route('/ui')
 def ui():
     """Serve the frontend UI."""
-    # Go up one level from utils/ to the project root, then into templates/
-    templates_dir = os.path.join(os.path.dirname(__file__), '..', 'templates')
-    return send_from_directory(templates_dir, 'index.html')
+    return send_from_directory('../templates', 'index.html')
 
 
 @app.route('/expand', methods=['POST'])

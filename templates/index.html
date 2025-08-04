@@ -8,7 +8,6 @@
     button { padding: 10px 20px; background: #007BFF; color: white; border: none; cursor: pointer; }
     .result { margin-top: 20px; padding: 15px; border-radius: 5px; }
     .safe { background: #d4edda; border: 1px solid #c3e6cb; }
-    .warning { background: #fff3cd; border: 1px solid #ffeaa7; }
     .danger { background: #f8d7da; border: 1px solid #f5c6cb; }
   </style>
 </head>
@@ -26,7 +25,6 @@
         alert("Please enter a URL");
         return;
       }
-
       fetch('/expand', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -35,29 +33,20 @@
       .then(res => res.json())
       .then(data => {
         const div = document.getElementById('result');
-        let html = `<div class="result `;
-
         if (data.error) {
-          html += `danger">❌ Error: ${data.error}`;
-        } else if (data.blacklisted) {
-          html += `danger">🚨 Blacklisted! Final URL: <a href="${data.final_url}" target="_blank">${data.final_url}</a>`;
-        } else if (data.reputation === "unknown") {
-          html += `warning">⚠️ Unknown reputation. Final URL: <a href="${data.final_url}" target="_blank">${data.final_url}</a>`;
+          div.innerHTML = `<div class="result danger">❌ ${data.error}</div>`;
         } else {
-          html += `safe">✅ Safe link. Final URL: <a href="${data.final_url}" target="_blank">${data.final_url}</a>`;
+          const status = data.blacklisted ? "🚨 Blacklisted" : "✅ Safe";
+          div.innerHTML = `
+            <div class="result ${data.blacklisted ? 'danger' : 'safe'}">
+              ${status}<br>
+              <strong>Final URL:</strong> <a href="${data.final_url}" target="_blank">${data.final_url}</a><br>
+              <strong>Confidence:</strong> ${data.confidence_score}/100
+            </div>`;
         }
-
-        html += `<br><strong>Confidence Score:</strong> ${data.confidence_score}/100`;
-        if (data.redirect_chain) {
-          html += `<br><strong>Redirects:</strong> ${data.redirect_chain.length}`;
-        }
-        html += `</div>`;
-        div.innerHTML = html;
       })
       .catch(err => {
-        console.error(err);
-        document.getElementById('result').innerHTML = 
-          `<div class="result danger">❌ Failed to connect to server.</div>`;
+        document.getElementById('result').innerHTML = `<div class="result danger">❌ Failed to connect</div>`;
       });
     }
   </script>
