@@ -126,16 +126,16 @@
         let className = 'safe';
 
         if (data.error) {
-          // Show the real error from the backend
+          // Show user-friendly error message
           className = 'danger';
           html += `
             <div class="result ${className}">
               <div class="field">
-                <span class="field-label">⚠️ Expansion Failed:</span>
+                <span class="field-label">⚠️ Warning:</span>
                 ${data.error}
               </div>`;
           
-          // Add details if available
+          // Add technical details (optional, for advanced users)
           if (data.details) {
             html += `<div class="field"><small><strong>Details:</strong> ${data.details}</small></div>`;
           }

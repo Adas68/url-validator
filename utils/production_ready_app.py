@@ -138,20 +138,26 @@ def expand_url():
         return jsonify(result)
 
     except requests.exceptions.Timeout:
-        return jsonify({'error': 'Request timed out'}), 504
+        return jsonify({
+            'error': 'The link took too long to load. It may be unsafe or broken.',
+            'details': 'Request timed out'
+        }), 504
 
     except requests.exceptions.TooManyRedirects:
-        return jsonify({'error': 'Too many redirects'}), 400
+        return jsonify({
+            'error': 'This link redirects too many times. It may be trying to hide something dangerous.',
+            'details': 'Too many redirects'
+        }), 400
 
     except requests.exceptions.ConnectionError as e:
         return jsonify({
-            'error': 'Failed to connect to destination',
+            'error': 'The destination website could not be reached. This link may be fake, expired, or malicious.',
             'details': str(e)
         }), 502
 
     except requests.exceptions.RequestException as e:
         return jsonify({
-            'error': 'URL expansion failed',
+            'error': 'URL expansion failed. We could not validate this link. It may be unsafe.',
             'details': str(e)
         }), 500
 

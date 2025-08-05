@@ -44,5 +44,25 @@
     "blacklisted": true,
     "reputation": "unknown",
     "confidence_score": 0
+  },
+  "https://www.youtube.com/": {
+    "original_url": "https://www.youtube.com/",
+    "final_url": "https://www.youtube.com/",
+    "redirect_chain": [],
+    "blacklisted": false,
+    "reputation": "good",
+    "confidence_score": 100
+  },
+  "https://mail.google.com/mail/u/5/#inbox": {
+    "original_url": "https://mail.google.com/mail/u/5/#inbox",
+    "final_url": "https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fmail.google.com%2Fmail%2Fu%2F5%2F&emr=1&followup=https%3A%2F%2Fmail.google.com%2Fmail%2Fu%2F5%2F&ifkv=AdBytiO01fw9_SPpIsDNYArlxiKnWIUMe3zahtafoAqO9KQVHUHWCnaZURMzOc08UO0hM0BBlKSDig&osid=1&passive=1209600&service=mail&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-1844615017%3A1754369409481609#inbox",
+    "redirect_chain": [
+      "https://mail.google.com/mail/u/5/#inbox",
+      "https://accounts.google.com/ServiceLogin?service=mail&passive=1209600&osid=1&continue=https://mail.google.com/mail/u/5/&followup=https://mail.google.com/mail/u/5/&emr=1#inbox",
+      "https://accounts.google.com/InteractiveLogin?continue=https://mail.google.com/mail/u/5/&emr=1&followup=https://mail.google.com/mail/u/5/&osid=1&passive=1209600&service=mail&ifkv=AdBytiOCHZNDJV5jagNLTwPFBvplHKrE8Wk3fnOFtpUCHxqa95092hkBiLzJ7eztWCYJeAzEGmcEBg#inbox"
+    ],
+    "blacklisted": false,
+    "reputation": "unknown",
+    "confidence_score": 50
   }
 }
