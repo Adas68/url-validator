@@ -1,25 +1,103 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>URL Validator</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 30px; max-width: 800px; margin: 0 auto; }
-    input[type="text"] { width: 100%; padding: 10px; margin: 10px 0; box-sizing: border-box; }
-    button { padding: 10px 20px; background: #007BFF; color: white; border: none; cursor: pointer; }
-    .result { margin-top: 20px; padding: 15px; border-radius: 5px; border: 1px solid #ddd; }
-    .safe { background: #d4edda; border-color: #c3e6cb; }
-    .warning { background: #fff3cd; border-color: #ffeaa7; }
-    .danger { background: #f8d7da; border-color: #f5c6cb; }
-    .field { margin: 8px 0; }
-    .field-label { font-weight: bold; }
-    .redirect-step { display: block; margin: 5px 0; color: #555; }
-    .cached-note { font-size: 0.9em; color: #666; font-style: italic; margin-top: 10px; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f7f9fc;
+      color: #333;
+      padding: 40px;
+      margin: 0;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    p {
+      text-align: center;
+      color: #666;
+      font-size: 1.1em;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 14px;
+      margin: 20px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 12px 24px;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .safe {
+      border-left: 5px solid #28a745;
+      background-color: #f8f9fa;
+    }
+    .warning {
+      border-left: 5px solid #ffc107;
+      background-color: #fff3cd;
+    }
+    .danger {
+      border-left: 5px solid #dc3545;
+      background-color: #f8d7da;
+    }
+    .field {
+      margin: 10px 0;
+      line-height: 1.5;
+    }
+    .field-label {
+      font-weight: bold;
+      color: #444;
+    }
+    .redirect-step {
+      display: block;
+      margin: 5px 0;
+      padding: 4px 8px;
+      background-color: #f1f1f1;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 14px;
+      color: #555;
+    }
+    .cached-note {
+      font-size: 0.9em;
+      color: #666;
+      font-style: italic;
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px dashed #ccc;
+    }
   </style>
 </head>
 <body>
   <h1>🔍 URL Validator</h1>
   <p>Paste a short link to check where it leads — without clicking it.</p>
-  <input type="text" id="urlInput" placeholder="https://bit.ly/...">
+  <input type="text" id="urlInput" placeholder="https://bit.ly/..." />
   <button onclick="validate()">Check Link</button>
   <div id="result"></div>
 
@@ -31,30 +109,42 @@
         return;
       }
 
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = '<div class="result">Checking link...</div>';
+
       fetch('/expand', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: url })
       })
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then(data => {
-        const div = document.getElementById('result');
         let html = '';
+        let className = 'safe';
 
         if (data.error) {
+          // Show the real error from the backend
+          className = 'danger';
           html += `
-            <div class="result danger">
-              <div class="field"><span class="field-label">❌ Error:</span> ${data.error}</div>
-            </div>`;
+            <div class="result ${className}">
+              <div class="field">
+                <span class="field-label">⚠️ Expansion Failed:</span>
+                ${data.error}
+              </div>`;
+          
+          // Add details if available
+          if (data.details) {
+            html += `<div class="field"><small><strong>Details:</strong> ${data.details}</small></div>`;
+          }
+          html += '</div>';
         } else {
-          // Determine status
-          let status = '✅ Safe';
-          let className = 'safe';
+          // Determine status and class
           if (data.blacklisted) {
-            status = '🚨 Blacklisted';
             className = 'danger';
           } else if (data.reputation === 'unknown') {
-            status = '⚠️ Unknown Reputation';
             className = 'warning';
           }
 
@@ -70,30 +160,54 @@
 
           // Add cached note
           let cachedNote = '';
-          if (data.cached !== undefined) {
+          if (data.cached) {
             cachedNote = `<div class="cached-note">Result from cache: ${data.cached}</div>`;
           }
 
           // Build full result
           html += `
             <div class="result ${className}">
-              <div class="field"><span class="field-label">Status:</span> ${status}</div>
-              <div class="field"><span class="field-label">Final URL:</span> <a href="${data.final_url}" target="_blank">${data.final_url}</a></div>
-              <div class="field"><span class="field-label">Confidence Score:</span> ${data.confidence_score}/100</div>
-              <div class="field"><span class="field-label">Reputation:</span> ${data.reputation}</div>
-              <div class="field"><span class="field-label">Blacklisted:</span> ${data.blacklisted ? 'Yes' : 'No'}</div>
+              <div class="field">
+                <span class="field-label">Status:</span>
+                ${data.blacklisted ? '🚨 Blacklisted' : 
+                  data.reputation === 'unknown' ? '⚠️ Unknown Reputation' : '✅ Safe'}
+              </div>
+              <div class="field">
+                <span class="field-label">Final URL:</span>
+                <a href="${data.final_url}" target="_blank" style="color:#007BFF;">
+                  ${data.final_url}
+                </a>
+              </div>
+              <div class="field">
+                <span class="field-label">Confidence Score:</span>
+                ${data.confidence_score}/100
+              </div>
+              <div class="field">
+                <span class="field-label">Reputation:</span>
+                ${data.reputation}
+              </div>
+              <div class="field">
+                <span class="field-label">Blacklisted:</span>
+                ${data.blacklisted ? 'Yes' : 'No'}
+              </div>
               ${redirectHtml}
             </div>
             ${cachedNote}
           `;
         }
 
-        div.innerHTML = html;
+        resultDiv.innerHTML = html;
       })
       .catch(err => {
-        console.error(err);
-        document.getElementById('result').innerHTML = 
-          `<div class="result danger">❌ Failed to connect to server. Is it running?</div>`;
+        console.error('Fetch error:', err);
+        resultDiv.innerHTML = `
+          <div class="result danger">
+            <div class="field">
+              <span class="field-label">❌ Connection Failed:</span>
+              Could not reach the <strong>URL validator server</strong>.<br>
+              Is the Flask app running?
+            </div>
+          </div>`;
       });
     }
   </script>

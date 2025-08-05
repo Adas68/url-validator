@@ -18,5 +18,31 @@
     "blacklisted": false,
     "reputation": "good",
     "confidence_score": 100
+  },
+  "https://www.extern.com/externships/national-geographic-society-the-nature-conservancy-freshwater-and-community-conservation-remote-externship?referrer=NGSTNCAMBASSADOR2025SUBEDIC": {
+    "original_url": "https://www.extern.com/externships/national-geographic-society-the-nature-conservancy-freshwater-and-community-conservation-remote-externship?referrer=NGSTNCAMBASSADOR2025SUBEDIC",
+    "final_url": "https://www.extern.com/externships/national-geographic-society-the-nature-conservancy-freshwater-and-community-conservation-remote-externship?referrer=NGSTNCAMBASSADOR2025SUBEDIC",
+    "redirect_chain": [],
+    "blacklisted": false,
+    "reputation": "good",
+    "confidence_score": 100
+  },
+  "https://bit.ly/3V9gFqo": {
+    "original_url": "https://bit.ly/3V9gFqo",
+    "final_url": "https://bit.ly/3V9gFqo",
+    "redirect_chain": [],
+    "blacklisted": false,
+    "reputation": "good",
+    "confidence_score": 100
+  },
+  "http://phishing.com/fake-login": {
+    "original_url": "http://phishing.com/fake-login",
+    "final_url": "https://www.phishing.com/",
+    "redirect_chain": [
+      "http://phishing.com/fake-login"
+    ],
+    "blacklisted": true,
+    "reputation": "unknown",
+    "confidence_score": 0
   }
 }
