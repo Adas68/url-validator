@@ -74,7 +74,9 @@ def expand_url():
     short_url = data.get('url')
 
     if not short_url:
-        return jsonify({'error': 'No URL provided'}), 400
+        return jsonify({
+            'error': 'No URL provided. Please enter a valid short link.'
+        }), 400
 
     # Strip whitespace (common in user input)
     short_url = short_url.strip()
@@ -162,10 +164,10 @@ def expand_url():
         }), 500
 
     except Exception as e:
-        # Fallback for unexpected errors
+        # 🔥 Fallback for ANY uncaught error (e.g., whois crash, DNS failure)
         return jsonify({
-            'error': 'Internal server error',
-            'details': str(e)
+            'error': 'An unexpected error occurred while validating the link.',
+            'details': f'{type(e).__name__}: {str(e)}'
         }), 500
 
 

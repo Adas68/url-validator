@@ -1,4 +1,6 @@
+# utils/reputation.py
 import whois
+from datetime import datetime
 
 # List of trusted domains (no www.)
 trusted_domains = [
@@ -34,11 +36,43 @@ def check_domain_reputation(domain):
     # Step 2: WHOIS lookup for unknown domains
     try:
         info = whois.whois(clean_domain)
-        if info.creation_date:
-            # Older domains (created before 2022) are considered more trustworthy
-            if hasattr(info.creation_date, 'year') and info.creation_date.year < 2022:
+        
+        # Handle creation_date safely
+        creation_date = info.creation_date
+        
+        # Case 1: creation_date is a list
+        if isinstance(creation_date, list):
+            # Extract valid dates and find the earliest
+            valid_dates = []
+            for date in creation_date:
+                if hasattr(date, 'year'):
+                    valid_dates.append(date)
+                elif isinstance(date, str):
+                    try:
+                        parsed = datetime.fromisoformat(date.replace('Z', '+00:00').split('.')[0])
+                        valid_dates.append(parsed)
+                    except:
+                        continue
+            if valid_dates:
+                creation_date = min(valid_dates)
+            else:
+                return {"reputation": "unknown"}
+        
+        # Case 2: creation_date is a string
+        if isinstance(creation_date, str):
+            try:
+                creation_date = datetime.fromisoformat(creation_date.replace('Z', '+00:00').split('.')[0])
+            except:
+                return {"reputation": "unknown"}
+
+        # Case 3: creation_date has year
+        if hasattr(creation_date, 'year'):
+            if creation_date.year < 2022:
                 return {"reputation": "good"}
+
         return {"reputation": "unknown"}
+
     except Exception as e:
-        # WHOIS lookup failed (e.g., invalid domain, timeout)
+        # Log the error for debugging
+        print(f"WHOIS lookup failed for {domain}: {e}")
         return {"reputation": "unknown"}

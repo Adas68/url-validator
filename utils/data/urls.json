@@ -64,5 +64,33 @@
     "blacklisted": false,
     "reputation": "unknown",
     "confidence_score": 50
+  },
+  "https://mail.google.com/mail/u/5/?pli=1#inbox": {
+    "original_url": "https://mail.google.com/mail/u/5/?pli=1#inbox",
+    "final_url": "https://accounts.google.com/v3/signin/identifier?continue=https%3A%2F%2Fmail.google.com%2Fmail%2Fu%2F5%2F%3Fpli%3D1&emr=1&followup=https%3A%2F%2Fmail.google.com%2Fmail%2Fu%2F5%2F%3Fpli%3D1&ifkv=AdBytiMPXhNQn_ffNMlThzomkJQrj04OXu3d2ZkQvDWxExLfEcPGrqUnP_aGa1GTluNUNpzSF_3zkQ&osid=1&passive=1209600&service=mail&flowName=WebLiteSignIn&flowEntry=ServiceLogin&dsh=S-1979034531%3A1754400933915494#inbox",
+    "redirect_chain": [
+      "https://mail.google.com/mail/u/5/?pli=1#inbox",
+      "https://accounts.google.com/ServiceLogin?service=mail&passive=1209600&osid=1&continue=https://mail.google.com/mail/u/5/?pli%3D1&followup=https://mail.google.com/mail/u/5/?pli%3D1&emr=1#inbox",
+      "https://accounts.google.com/InteractiveLogin?continue=https://mail.google.com/mail/u/5/?pli%3D1&emr=1&followup=https://mail.google.com/mail/u/5/?pli%3D1&osid=1&passive=1209600&service=mail&ifkv=AdBytiNpE_n2Eg3YcZKk8Hpspm_Khc2fT9pqTJoT8sstpTffjdLo9B7UlQ8kWl2zfk7_0G9uyeE7jw#inbox"
+    ],
+    "blacklisted": false,
+    "reputation": "unknown",
+    "confidence_score": 50
+  },
+  "https://chat.qwen.ai/c/3912eda7-7ac0-4297-808a-875d5de9113d": {
+    "original_url": "https://chat.qwen.ai/c/3912eda7-7ac0-4297-808a-875d5de9113d",
+    "final_url": "https://chat.qwen.ai/c/3912eda7-7ac0-4297-808a-875d5de9113d",
+    "redirect_chain": [],
+    "blacklisted": false,
+    "reputation": "unknown",
+    "confidence_score": 50
+  },
+  "https://www.linkedin.com/in/chanda-subedi/": {
+    "original_url": "https://www.linkedin.com/in/chanda-subedi/",
+    "final_url": "https://www.linkedin.com/in/chanda-subedi/",
+    "redirect_chain": [],
+    "blacklisted": false,
+    "reputation": "good",
+    "confidence_score": 100
   }
 }

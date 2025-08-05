@@ -118,7 +118,12 @@
         body: JSON.stringify({ url: url })
       })
       .then(res => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) {
+          // Server returned an error status (e.g., 502)
+          return res.json().then(data => {
+            throw new Error(JSON.stringify(data));
+          });
+        }
         return res.json();
       })
       .then(data => {
@@ -126,29 +131,48 @@
         let className = 'safe';
 
         if (data.error) {
-          // Show user-friendly error message
           className = 'danger';
+          let userMessage = '';
+
+          if (data.error.includes('Failed to connect to destination') ||
+              data.error.includes('Max retries exceeded') ||
+              data.error.includes('Name or service not known')) {
+            userMessage = `
+              This link leads to a website that doesn't exist or can't be reached.
+              It might be fake, expired, or a scam. <strong>Do not trust it.</strong>
+            `;
+          } else if (data.error.includes('timed out')) {
+            userMessage = `
+              The link took too long to load. It might be unsafe or broken.
+              <strong>It's best not to click it.</strong>
+            `;
+          } else if (data.error.includes('Too many redirects')) {
+            userMessage = `
+              This link jumps through too many websites — it might be hiding something dangerous.
+              <strong>This is a red flag.</strong>
+            `;
+          } else {
+            userMessage = `We couldn't validate this link. It may be unsafe.`;
+          }
+
           html += `
             <div class="result ${className}">
               <div class="field">
-                <span class="field-label">⚠️ Warning:</span>
-                ${data.error}
+                <span class="field-label">🚨 This Link Is Suspicious:</span>
+                ${userMessage}
               </div>`;
           
-          // Add technical details (optional, for advanced users)
           if (data.details) {
             html += `<div class="field"><small><strong>Details:</strong> ${data.details}</small></div>`;
           }
           html += '</div>';
         } else {
-          // Determine status and class
           if (data.blacklisted) {
             className = 'danger';
           } else if (data.reputation === 'unknown') {
             className = 'warning';
           }
 
-          // Build redirect chain
           let redirectHtml = '';
           if (data.redirect_chain && data.redirect_chain.length > 0) {
             redirectHtml = '<div class="field"><span class="field-label">Redirect Chain:</span><br>';
@@ -158,13 +182,11 @@
             redirectHtml += '</div>';
           }
 
-          // Add cached note
           let cachedNote = '';
           if (data.cached) {
             cachedNote = `<div class="cached-note">Result from cache: ${data.cached}</div>`;
           }
 
-          // Build full result
           html += `
             <div class="result ${className}">
               <div class="field">
@@ -200,12 +222,31 @@
       })
       .catch(err => {
         console.error('Fetch error:', err);
+        
+        // Try to parse error message from server
+        try {
+          const data = JSON.parse(err.message);
+          if (data.error) {
+            resultDiv.innerHTML = `
+              <div class="result danger">
+                <div class="field">
+                  <span class="field-label">🚨 This Link Is Suspicious:</span>
+                  ${data.error}
+                </div>
+                ${data.details ? `<div class="field"><small><strong>Details:</strong> ${data.details}</small></div>` : ''}
+              </div>`;
+            return;
+          }
+        } catch (e) {
+          // If parsing fails, show generic server error
+        }
+
         resultDiv.innerHTML = `
           <div class="result danger">
             <div class="field">
-              <span class="field-label">❌ Connection Failed:</span>
-              Could not reach the <strong>URL validator server</strong>.<br>
-              Is the Flask app running?
+              <span class="field-label">❌ App Not Running:</span>
+              Could not connect to the URL Validator.<br>
+              <strong>Is the Flask app running?</strong>
             </div>
           </div>`;
       });
